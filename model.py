@@ -40,19 +40,20 @@ class Model(nn.Module):
                     value=self.tokenizer_t5.pad_token_id
                 )
             out1 = self.tokenizer_t5.decode(output1[0])
-            context_2, got2 = got_step2(text, out1,choices)
-            input_ids2 = self.tokenizer_t5(got2, return_tensors="pt").input_ids
-            output2 = self.model_t5.generate(input_ids2.to(self.model.device))
-            input_reconstructed2 = self.model_t5.generate(input_ids=output2)
-            input_reconstructed_decoded2 = self.tokenizer_t5.decode(input_reconstructed2[0], skip_special_tokens=True)
-            input_ids_reconstructed2 = self.tokenizer_t5.encode(input_reconstructed_decoded2, return_tensors="pt")
-            if input_ids_reconstructed2.shape[1] < input_ids2.shape[1]:
-                input_ids_reconstructed2 = torch.nn.functional.pad(
-                    input_ids_reconstructed2,
-                    (0, input_ids2.shape[1] - input_ids_reconstructed2.shape[1]),
-                    value=self.tokenizer_t5.pad_token_id
-                )
-            out2 = self.tokenizer_t5.decode(output2[0])
+            for i in range(choices):
+                context_2, got2 = got_step2(text, out1,choices[i])
+                input_ids2 = self.tokenizer_t5(got2, return_tensors="pt").input_ids
+                output2 = self.model_t5.generate(input_ids2.to(self.model.device))
+                input_reconstructed2 = self.model_t5.generate(input_ids=output2)
+                input_reconstructed_decoded2 = self.tokenizer_t5.decode(input_reconstructed2[0], skip_special_tokens=True)
+                input_ids_reconstructed2 = self.tokenizer_t5.encode(input_reconstructed_decoded2, return_tensors="pt")
+                if input_ids_reconstructed2.shape[1] < input_ids2.shape[1]:
+                    input_ids_reconstructed2 = torch.nn.functional.pad(
+                        input_ids_reconstructed2,
+                        (0, input_ids2.shape[1] - input_ids_reconstructed2.shape[1]),
+                        value=self.tokenizer_t5.pad_token_id
+                    )
+                out2 = self.tokenizer_t5.decode(output2[0])
 
             context_3, got3 = got_step3(text, out1, out2)
             num_answers = 3
