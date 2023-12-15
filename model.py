@@ -40,6 +40,8 @@ class Model(nn.Module):
                     value=self.tokenizer_t5.pad_token_id
                 )
             out1 = self.tokenizer_t5.decode(output1[0])
+            
+            out2 = []
             for i in range(choices):
                 context_2, got2 = got_step2(text, out1,choices[i])
                 input_ids2 = self.tokenizer_t5(got2, return_tensors="pt").input_ids
@@ -53,8 +55,9 @@ class Model(nn.Module):
                         (0, input_ids2.shape[1] - input_ids_reconstructed2.shape[1]),
                         value=self.tokenizer_t5.pad_token_id
                     )
-                out2 = self.tokenizer_t5.decode(output2[0])
-
+                out2.append(self.tokenizer_t5.decode(output2[0]))
+            out2 = " ".join(out2)
+            
             context_3, got3 = got_step3(text, out1, out2)
             num_answers = 3
             answers = []
