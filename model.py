@@ -98,9 +98,11 @@ class Model(nn.Module):
     def forward(self, batch):
         content, labels, answer = batch
         labels = torch.tensor(labels, dtype=torch.long).to(self.model.device)
-        logits, loss = self.score_input(content,labels)
+        logits, loss = self.score_input(content, labels, self.num_choices)
         preds_cls = list(torch.argmax(logits, 1).cpu().numpy())
         positive_logits = logits[:, 1]
         preds = torch.argmax(positive_logits.reshape(-1, self.num_choices), 1)
         preds = list(preds.cpu().numpy())
+
+        
         return loss, preds, preds_cls
