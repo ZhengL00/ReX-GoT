@@ -104,4 +104,3 @@ class Model(nn.Module):
         preds = torch.argmax(positive_logits.reshape(-1, self.num_choices), 1)
         preds = list(preds.cpu().numpy())
         return loss, preds, preds_cls
-
