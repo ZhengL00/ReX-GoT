@@ -56,6 +56,10 @@ def train_or_eval_model(model, dataloader, optimizer=None, split="Train"):
 
     return avg_loss, acc, instance_acc, f1
 
+def configure_optimizer(model, args):
+    optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.wd, eps=args.adam_epsilon)
+    return optimizer
+
 
 if __name__ == "__main__":
 
